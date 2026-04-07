@@ -9,6 +9,10 @@ on:
         required: false
         type: boolean
         default: true
+      publish-external-platforms:
+        required: false
+        type: boolean
+        default: false
       change-log:
         required: false
         type: string
@@ -37,7 +41,7 @@ jobs:
           ./gradlew clean shadowJar --info --stacktrace
       -
         name: Publish Modrinth
-        if: ${{ !inputs.is-snapshot }}
+        if: ${{ !inputs.is-snapshot && inputs.publish-external-platforms }}
         env:
           IS_SNAPSHOT: ${{ inputs.is-snapshot }}
           CHANGE_LOG: ${{ inputs.change-log }}
@@ -46,13 +50,20 @@ jobs:
           ./gradlew modrinth modrinthSyncBody --info --stacktrace
       -
         name: Publish CurseForge
-        if: ${{ !inputs.is-snapshot }}
+        if: ${{ !inputs.is-snapshot && inputs.publish-external-platforms }}
         env:
           IS_SNAPSHOT: ${{ inputs.is-snapshot }}
           CHANGE_LOG: ${{ inputs.change-log }}
           CURSE_TOKEN: ${{ secrets.CURSE_TOKEN }}
         run: |
           ./gradlew curseforge --info --stacktrace
+      -
+        name: Publish GitHub Release Assets
+        if: ${{ !inputs.is-snapshot }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          fail_on_unmatched_files: true
       -
         uses: actions/upload-artifact@v4
         with:
