@@ -1,0 +1,170 @@
+name: Track Upstream
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: track-upstream
+  cancel-in-progress: true
+
+env:
+  UPSTREAM_REPO: CFPAOrg/I18nUpdateMod3
+  UPSTREAM_BRANCH: main
+  BASE_BRANCH: main
+  SYNC_BRANCH: bot/sync-upstream
+
+jobs:
+  track-upstream:
+    name: Track Upstream
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE_BRANCH }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream into sync branch
+        id: sync
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          if git remote get-url upstream >/dev/null 2>&1; then
+            git remote set-url upstream "https://github.com/${UPSTREAM_REPO}.git"
+          else
+            git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          fi
+
+          git fetch origin "${BASE_BRANCH}"
+          git fetch upstream "${UPSTREAM_BRANCH}"
+          git checkout -B "${SYNC_BRANCH}" "origin/${BASE_BRANCH}"
+
+          if ! git merge --no-ff --no-edit "upstream/${UPSTREAM_BRANCH}"; then
+            git merge --abort
+            echo "merge_conflict=true" >> "${GITHUB_OUTPUT}"
+            exit 1
+          fi
+
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse "origin/${BASE_BRANCH}")" ]; then
+            echo "has_changes=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          git push --force-with-lease origin "HEAD:${SYNC_BRANCH}"
+          echo "has_changes=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Create or update pull request
+        if: ${{ steps.sync.outputs.has_changes == 'true' }}
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:${process.env.SYNC_BRANCH}`;
+            const base = process.env.BASE_BRANCH;
+            const title = 'chore: sync upstream changes';
+            const body = [
+              'This PR was created automatically by the `Track Upstream` workflow.',
+              '',
+              `- Upstream: \`${process.env.UPSTREAM_REPO}\``,
+              `- Upstream branch: \`${process.env.UPSTREAM_BRANCH}\``,
+              `- Base branch: \`${base}\``
+            ].join('\n');
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head,
+              base
+            });
+
+            if (pulls.length > 0) {
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pulls[0].number,
+                title,
+                body
+              });
+              core.setOutput('pull_number', String(pulls[0].number));
+              core.info(`Updated PR #${pulls[0].number}`);
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner,
+              repo,
+              title,
+              head,
+              base,
+              body
+            });
+
+            core.setOutput('pull_number', String(pr.number));
+            core.info(`Created PR #${pr.number}`);
+
+      - name: Enable auto-merge
+        if: ${{ steps.pr.outputs.pull_number != '' }}
+        env:
+          AUTO_MERGE_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.pull_number }}
+        run: |
+          if [ -z "${AUTO_MERGE_TOKEN}" ]; then
+            echo "AUTO_MERGE_TOKEN is required to enable auto-merge for bot-created sync pull requests." >&2
+            exit 1
+          fi
+
+          GH_TOKEN="${AUTO_MERGE_TOKEN}" gh pr merge --repo "${GITHUB_REPOSITORY}" --merge --auto "${PR_NUMBER}"
+
+      - name: Close stale pull request
+        if: ${{ !cancelled() && (steps.sync.outputs.has_changes == 'false' || steps.sync.outputs.merge_conflict == 'true') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = `${owner}:${process.env.SYNC_BRANCH}`;
+            const base = process.env.BASE_BRANCH;
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head,
+              base
+            });
+
+            for (const pull of pulls) {
+              await github.rest.pulls.update({
+                owner,
+                repo,
+                pull_number: pull.number,
+                state: 'closed'
+              });
+              core.info(`Closed stale PR #${pull.number}`);
+            }
+
+      - name: Fail on sync error
+        if: ${{ steps.sync.outcome == 'failure' }}
+        run: |
+          if [ "${{ steps.sync.outputs.merge_conflict }}" = 'true' ]; then
+            echo "Upstream merge conflict requires manual resolution." >&2
+          else
+            echo "Tracking upstream failed before pull request reconciliation completed." >&2
+          fi
+          exit 1
