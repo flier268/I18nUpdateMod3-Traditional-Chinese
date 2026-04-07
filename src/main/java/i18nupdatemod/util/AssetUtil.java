@@ -22,15 +22,13 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class AssetUtil {
-    private static final String CFPA_ASSET_ROOT = "http://downloader1.meitangdehulu.com:22943/";
+    private static final String CFPA_ASSET_ROOT = "https://raw.githubusercontent.com/";
     private static final List<String> MIRRORS;
 
     static {
         // 镜像地址可以改成服务器下发
         MIRRORS = new ArrayList<>();
         MIRRORS.add("https://raw.githubusercontent.com/");
-        // 此镜像源维护者：502y
-        MIRRORS.add("http://8.137.167.65:64684/");
     }
 
     public static void download(String url, Path localFile) throws IOException, URISyntaxException {
@@ -46,7 +44,6 @@ public class AssetUtil {
 
     public static String getFastestUrl() {
         List<String> urls = new ArrayList<>(MIRRORS);
-        urls.add(CFPA_ASSET_ROOT);
 
         ExecutorService executor = Executors.newFixedThreadPool(Math.max(urls.size(), 10));
         try {
@@ -107,7 +104,7 @@ public class AssetUtil {
     @NotNull
     public static Map<String, String> getGitIndex() {
         try {
-            URL index_url = new URL("https://raw.githubusercontent.com/CFPAOrg/Minecraft-Mod-Language-Package/refs/heads/index/version-index.json");
+            URL index_url = new URL("https://raw.githubusercontent.com/flier268/Minecraft-Mod-Traditional-Chinese-Language-Package/refs/heads/index/version-index.json");
             HttpURLConnection httpConn = (HttpURLConnection) index_url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setConnectTimeout(5000);

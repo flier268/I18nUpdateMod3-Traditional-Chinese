@@ -20,9 +20,9 @@ import static i18nupdatemod.util.AssetUtil.getGitIndex;
 
 public class I18nConfig {
     /**
-     * <a href="https://github.com/CFPAOrg/Minecraft-Mod-Language-Package">CFPAOrg/Minecraft-Mod-Language-Package</a>
+     * <a href="https://github.com/flier268/Minecraft-Mod-Traditional-Chinese-Language-Package">flier268/Minecraft-Mod-Traditional-Chinese-Language-Package</a>
      */
-    private static final String CFPA_ASSET_ROOT = "http://downloader1.meitangdehulu.com:22943/";
+    private static final String CFPA_ASSET_ROOT = "https://raw.githubusercontent.com/";
     private static final Gson GSON = new Gson();
     private static I18nMetaData i18nMetaData;
 
@@ -104,7 +104,7 @@ public class I18nConfig {
                 Log.debug(index.toString());
                 throw new Exception();
             }
-            String assetRoot = "https://github.com/CFPAOrg/Minecraft-Mod-Language-Package/releases/download/" + releaseTag + "/";
+            String assetRoot = "https://github.com/flier268/Minecraft-Mod-Traditional-Chinese-Language-Package/releases/download/" + releaseTag + "/";
 
             return convert.convertFrom.stream().map(it -> getAssetMetaData(it, loader)).map(it -> {
                 GameAssetDetail.AssetDownloadDetail adi = new GameAssetDetail.AssetDownloadDetail();
