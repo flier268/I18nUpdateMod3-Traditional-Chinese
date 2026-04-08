@@ -1,18 +1,18 @@
 # 自动汉化更新模组Ⅲ
 
-[![Version](https://img.shields.io/github/v/release/CFPAOrg/I18nUpdateMod3?label=&logo=V&labelColor=E1F5FE&color=5D87BF&style=for-the-badge)](https://github.com/CFPAOrg/I18nUpdateMod3/tags)
-[![CurseForge](https://cf.way2muchnoise.eu/short_I18nUpdateMod.svg?badge_style=for_the_badge)](https://www.curseforge.com/minecraft/mc-mods/i18nupdatemod)
-[![Modrinth](https://img.shields.io/modrinth/dt/PWERr14M?label=&logo=Modrinth&labelColor=white&color=00AF5C&style=for-the-badge)](https://modrinth.com/mod/i18nupdatemod)
-[![License](https://img.shields.io/github/license/CFPAOrg/I18nUpdateMod3?label=&logo=c&style=for-the-badge&color=A8B9CC&labelColor=455A64)](https://github.com/CFPAOrg/I18nUpdateMod3/blob/main/LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/CFPAOrg/I18nUpdateMod3/beta.yml?style=for-the-badge&label=&logo=Gradle&labelColor=388E3C)](https://github.com/CFPAOrg/I18nUpdateMod3/actions)
-[![Star](https://img.shields.io/github/stars/CFPAOrg/I18nUpdateMod3?label=&logo=GitHub&labelColor=black&color=FAFAFA&style=for-the-badge)](https://github.com/CFPAOrg/I18nUpdateMod3/stargazers)
+[![Version](https://img.shields.io/github/v/release/flier268/I18nUpdateMod3-Traditional-Chinese?label=&logo=V&labelColor=E1F5FE&color=5D87BF&style=for-the-badge)](https://github.com/flier268/I18nUpdateMod3-Traditional-Chinese/tags)
+[![License](https://img.shields.io/github/license/flier268/I18nUpdateMod3-Traditional-Chinese?label=&logo=c&style=for-the-badge&color=A8B9CC&labelColor=455A64)](https://github.com/flier268/I18nUpdateMod3-Traditional-Chinese/blob/main/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/flier268/I18nUpdateMod3-Traditional-Chinese/beta.yml?style=for-the-badge&label=&logo=Gradle&labelColor=388E3C)](https://github.com/flier268/I18nUpdateMod3-Traditional-Chinese/actions)
+[![Star](https://img.shields.io/github/stars/flier268/I18nUpdateMod3-Traditional-Chinese?label=&logo=GitHub&labelColor=black&color=FAFAFA&style=for-the-badge)](https://github.com/flier268/I18nUpdateMod3-Traditional-Chinese/stargazers)
 
-[![Minecraft](https://cf.way2muchnoise.eu/versions/Minecraft_I18nUpdateMod_all.svg?badge_style=for_the_badge)](https://github.com/CFPAOrg/I18nUpdateMod3)
+[![Minecraft](https://cf.way2muchnoise.eu/versions/Minecraft_I18nUpdateMod_all.svg?badge_style=for_the_badge)](https://github.com/flier268/I18nUpdateMod3-Traditional-Chinese)
 
 更现代的自动汉化更新模组。
 
 「[简体中文资源包（Minecraft Mod Language Package）](https://github.com/CFPAOrg/Minecraft-Mod-Language-Package)」是由「[CFPAOrg](http://cfpa.team/)」团队维护的「自动汉化资源包」，可以将一些Mod中的文本翻译为中文。  
-本Mod用于自动下载、更新、应用「简体中文资源包」。
+「[模組繁體中文語言包（Minecraft-Mod-Traditional-Chinese-Language-Package）](https://github.com/flier268/Minecraft-Mod-Traditional-Chinese-Language-Package)」是由 「[flier268](https://github.com/flier268)」維護的自動轉繁體的分支，自動從[上游](https://github.com/CFPAOrg/Minecraft-Mod-Language-Package)更新轉繁體
+
+本Mod用于自动下载、更新、应用「繁體中文资源包」。
 
 ## 下载
 
